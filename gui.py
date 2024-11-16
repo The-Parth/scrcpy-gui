@@ -91,8 +91,9 @@ def flag_builder():
     
     # change directory to the script directory
     os.chdir(fdir)
-    # launch a new process
-    subprocess.Popen(command, shell=True)
+
+    # execute the command
+    subprocess.run(command)
     
 
 
