@@ -91,9 +91,10 @@ def flag_builder():
     
     # change directory to the script directory
     os.chdir(fdir)
-    # run the command
-    subprocess.run(command)
+    # launch a new process
+    subprocess.Popen(command, shell=True)
     
+
 
 # Update variables function
 def update_variables():
@@ -113,14 +114,9 @@ def update_variables():
 
 # Submit function
 def submit():
-    new_window = tk.Toplevel(root)
-    new_window.title("Submitted Values")
     
     update_variables()
     flag_builder()
-    
-    for key, value in variables.items():
-        ttk.Label(new_window, text=f"{key}: {value}").pack(padx=10, pady=5)
 
 # Toggle camera options
 def toggle_camera_options():
