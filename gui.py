@@ -86,8 +86,15 @@ def flag_builder():
     # execute the command
     command = ["scrcpy"] + flags
     print("Executing command with flags:", command)
-    subprocess.Popen(command)
+    fdir = os.path.dirname(os.path.realpath(__file__))
+    print(fdir)
     
+    # change directory to the script directory
+    os.chdir(fdir)
+    # run the command
+    subprocess.run(command)
+    
+
 # Update variables function
 def update_variables():
     variables["fps"] = fps_var.get()
