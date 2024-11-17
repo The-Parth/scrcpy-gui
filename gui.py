@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import subprocess
+from datetime import datetime
 
 # Initialize variables
 variables = {
@@ -15,7 +16,9 @@ variables = {
     "show_touches": False,
     "turn_screen_off": False,
     "stay_awake": False,
-    "always_on_top": False
+    "always_on_top": False,
+    "file_name": "SCRCPY",
+    "record_session": False,
 }
 
 import os
@@ -83,6 +86,11 @@ def flag_builder():
     if variables["res"] != 0 and not variables["no_video"]:
         flags.append(f"--max-size={variables['res']}")
         
+    # Record Session
+    if variables["record_session"]:
+        filename = variables["file_name"].replace(" ", "_") + "_" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "." + recording_extension_var.get()
+        flags.append(f"--record={filename}")
+        
     # execute the command
     command = ["scrcpy"] + flags
     print("Executing command with flags:", command)
@@ -112,6 +120,8 @@ def update_variables():
     variables["turn_screen_off"] = turn_screen_off_var.get()
     variables["stay_awake"] = stay_awake_var.get()
     variables["always_on_top"] = always_on_top_var.get()
+    variables["file_name"] = file_name_var.get()
+    variables["record_session"] = record_session_var.get()
 
 # Submit function
 def submit():
@@ -217,6 +227,34 @@ always_on_top_var = tk.BooleanVar()
 always_on_top_check = ttk.Checkbutton(root, text="Always On Top", variable=always_on_top_var)
 always_on_top_check.grid(row=current_row, column=1, columnspan=1, padx=10, pady=5)
 current_row += 1
+
+# Record Current Session Checkbox
+record_session_var = tk.BooleanVar()
+record_session_check = ttk.Checkbutton(root, text="Record Session", variable=record_session_var)
+record_session_check.grid(row=current_row, column=0, columnspan=1, padx=10, pady=5)
+
+# Recording Extension Dropdown
+ttk.Label(root, text="Recording Extension").grid(row=current_row, column=1, padx=10, pady=5)
+recording_extensions = ["mp4", "mkv", "flac", "opus", "m4a", "aac", "wav"]
+recording_extension_var = tk.StringVar(value=recording_extensions[0])
+recording_extension_combobox = ttk.Combobox(root, textvariable=recording_extension_var, values=recording_extensions, state='readonly')
+recording_extension_combobox.grid(row=current_row, column=1, padx=10, pady=5, columnspan=1)
+
+current_row += 1
+
+# File Name Field
+ttk.Label(root, text="File Name").grid(row=current_row, column=0, padx=10, pady=5)
+file_name_var = tk.StringVar(value=variables["file_name"])
+file_name_entry = ttk.Entry(root, textvariable=file_name_var)
+file_name_entry.grid(row=current_row, column=1, padx=10, pady=5, columnspan=2)
+
+current_row += 1
+
+# Note Stating that the file will be saved in videos folder, name will be appended with date and time
+ttk.Label(root, text="Note: The file will be saved in the Scripts folder\nThe name will be appended with the date and time").grid(row=current_row, column=0, columnspan=2, padx=10, pady=5)
+
+current_row += 1
+
 
 # Submit Button
 submit_button = ttk.Button(root, text="Submit", command=submit)
