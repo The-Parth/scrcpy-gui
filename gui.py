@@ -6,7 +6,7 @@ from datetime import datetime
 # Initialize variables
 variables = {
     "fps": 60,
-    "res": 1920,
+    "res": 0,
     "no_video": False,
     "no_control": False,
     "use_camera": False,
@@ -19,6 +19,8 @@ variables = {
     "always_on_top": False,
     "file_name": "SCRCPY",
     "record_session": False,
+    "bitrate": 16,
+    "delay": 0,
 }
 
 import os
@@ -91,6 +93,15 @@ def flag_builder():
         filename = variables["file_name"].replace(" ", "_") + "_" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "." + recording_extension_var.get()
         flags.append(f"--record={filename}")
         
+    # Bitrate
+    if variables["bitrate"] != 0:
+        flags.append(f"--video-bit-rate={variables['bitrate']}M")
+        
+    # Delay
+    if variables["delay"] != 0:
+        flags.append(f"--display-buffer={variables['delay']}")
+        flags.append(f"--audio-buffer={variables['delay']}")
+        
     # execute the command
     command = ["scrcpy"] + flags
     print("Executing command with flags:", command)
@@ -101,7 +112,9 @@ def flag_builder():
     os.chdir(fdir)
 
     # execute the command
-    subprocess.run(command)
+    subprocess.Popen(command, cwd=fdir)
+    
+    
     
 
 
@@ -122,6 +135,8 @@ def update_variables():
     variables["always_on_top"] = always_on_top_var.get()
     variables["file_name"] = file_name_var.get()
     variables["record_session"] = record_session_var.get()
+    variables["bitrate"] = bitrate_var.get()
+    variables["delay"] = delay_var.get()
 
 # Submit function
 def submit():
@@ -253,6 +268,20 @@ current_row += 1
 # Note Stating that the file will be saved in videos folder, name will be appended with date and time
 ttk.Label(root, text="Note: The file will be saved in the Scripts folder\nThe name will be appended with the date and time").grid(row=current_row, column=0, columnspan=2, padx=10, pady=5)
 
+current_row += 1
+
+# Bitrate Field
+ttk.Label(root, text="Bitrate (MB/s)").grid(row=current_row, column=0, padx=10, pady=5)
+bitrate_var = tk.IntVar(value=variables["bitrate"])
+bitrate_spinbox = ttk.Spinbox(root, from_=4, to=64, increment=1, textvariable=bitrate_var, width=10)
+bitrate_spinbox.grid(row=current_row, column=1, padx=10, pady=5)
+current_row += 1
+
+# Delay Field
+ttk.Label(root, text="Delay (ms)").grid(row=current_row, column=0, padx=10, pady=5)
+delay_var = tk.IntVar(value=variables["delay"])
+delay_spinbox = ttk.Spinbox(root, from_=0, to=3000, increment=1, textvariable=delay_var, width=10)
+delay_spinbox.grid(row=current_row, column=1, padx=10, pady=5)
 current_row += 1
 
 
